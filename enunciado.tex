@@ -1,0 +1,30 @@
+\documentclass[12pt]{article}
+
+\usepackage{xcolor}
+\definecolor{darkgreen}{RGB}{0, 150, 0}
+
+\begin{document}
+
+\section*{Trabalho de Redes - 2024.3 - UFJF}
+
+Construir um protocolo confiável de transporte sobre o protocolo não confiável UDP. Qualquer linguagem de programação pode ser usada.
+
+\vspace{2em}
+
+Para este trabalho você terá uma comunicação ponto a ponto (cliente e servidor) utilizando um UDP modificado para troca de pacotes. A implementação deve ser realizada utilizando o protocolo de transporte UDP, mas com a lógica de controle do seu protocolo estará no nível da camada de aplicação. Não é necessário modificar o protocolo UDP em si, mas sim colocar tratamentos dos dados enviados e recebidos.
+
+São requisitos deste protocolo ter as seguintes funcionalidades:
+
+\begin{enumerate}
+    \item \textcolor{darkgreen}{Entrega ordenada para aplicação baseado na ordem dos pacotes (ter \# de sequência)}.
+    \item Confirmação acumulativa (ACK acumulativo) do destinatário para o remetente.
+    \item Adicione no protocolo um controle de fluxo, onde o remetente deve saber qual o tamanho da janela do destinatário, a fim de não afogá-lo.
+    \item Agora crie uma equação de controle de congestionamento, a fim de que, se a rede estiver apresentando perda (muitos pacotes com ACK pendentes, ACK duplicados ou timeout), ele deve ser utilizado para reduzir o fluxo de envio de pacotes. 
+    \item Comentário 4.1: Você deve propor um controle de congestionamento, que pode ser baseado em algum existente no TCP, no QUIC ou qualquer outro protocolo. 
+    \item Comentário 4.2: Lembre da Aula 13, onde há controle de congestionamento no TCP que utiliza uma janela "cwnd" e um variável "ssthresh" para controle das fases de "Slow Start" e "Congestion Avoidance".
+    \item Avalie seu protocolo sobre 1 remetente (cliente) que envia um arquivo (ou dados sintéticos que preencham o payload) para 1 destinatário (servidor). 
+    \item Restrição 5.1: Esses dados devem ser equivalente a, pelo menos, 10.000 pacotes. 
+    \item Restrição 5.2: Para avaliar o controle de congestionamento, insira perdas arbitrárias (ou utilizando uma função rand()) de pacotes no destinatário (você pode fazer isso sorteando a cada chegada de um novo pacote se ele será contabilizado e processado ou descartado).
+\end{enumerate}
+
+\end{document}

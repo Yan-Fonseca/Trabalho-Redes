@@ -40,5 +40,18 @@ for seq in seq_numbers:
     bytesToSend = pacote.bytesToSend()
     pacote.sendto(UDPClientSocket, bytesToSend)
     msgFromServer = pacote.recvfrom(UDPClientSocket)
+    
+    ack_decoded = msgFromServer[0].decode()  # Ex: "ACK:2001:3"
+    print("Mensagem vinda do Servidor: {}".format(ack_decoded))
 
-    print("Mensagem vinda do Servidor {}".format(msgFromServer[0]))
+    # Interpretando o ACK para controle de fluxo
+    try:
+        _, next_expected, window_str = ack_decoded.split(":")
+        rwnd = int(window_str)
+    except Exception as e:
+        print("Erro ao interpretar ACK:", e)
+        continue
+
+    if rwnd == 0:
+        print("Janela do servidor cheia. Aguardando antes de enviar o próximo pacote...")
+        time.sleep(2)

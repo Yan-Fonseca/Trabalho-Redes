@@ -51,6 +51,8 @@ while True:
         # Pacote duplicado ou já entregue
         print(f"Pacote {seq} duplicado ou já entregue, descartado")
 
-    # Envia ACK de volta para o cliente
-    ack = f"ACK:{expected_seq}" #Indica que todos os pacotes até o "expected_seq - 1" foram recebidos corretamente.
+    # Controle de fluxo: calcula a janela disponível - receive window (rwnd)
+    rwnd = windowSize - len(buffer)
+    # Envia ACK que confirma o próximo número esperado e informa a janela disponível
+    ack = f"ACK:{expected_seq}:{rwnd}"
     UDPServerSocket.sendto(ack.encode(), address) 

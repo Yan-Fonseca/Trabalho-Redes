@@ -8,3 +8,4 @@ localIP = '127.0.0.1'
 localPort = 5005
 bufferSize  = 1024 # max size of the buffer
 ISN = 2000
+windowSize = 5 # Tamanho máximo do buffer do servidor para pacotes fora de ordem

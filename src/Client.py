@@ -1,52 +1,44 @@
 from parameters import *
 
-class UDPClient:
-    def __init__(self, ipDest, portDest, ISN):
-        self.ipDest = ipDest # ip de destino
-        self.portDest = portDest #porta de destino
-        self.ISN = ISN #número de sequência inicial
-        
-        # AF_INET: ipv4
-        # SOCK_DGRAM: udp
-        self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        
-    def start_connection():
-        pass # 3 way-handshake
+class UDP_pacote:
+    def __init__(self, msgFromClient, serverAddressPort, bufferSize, seqNum):
+        self.msgFromClient = msgFromClient
+        self.serverAddressPort = serverAddressPort
+        self.bufferSize = bufferSize
+        self.SeqNum = seqNum
 
-    def end_connection():
-        pass # 3 way-handshake finalize
-    
-    def sendto(self, packet):
-        # envia o pacote
-        self.UDPClientSocket.sendto(packet, (self.ipDest, self.portDest))
+    def UDPClientSocket(self):
+        # Cria um socket UDP do lado cliente
+        UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        return UDPClientSocket
 
-    def recvfrom(self):
-        # recebe o pacote do servidor
-        msgFromServer, _ = self.UDPClientSocket.revfrom(bufferSize)
+    def bytesToSend(self):
+        bytesToSend = str.encode(f"{self.SeqNum}:{self.msgFromClient}")
+        return bytesToSend
+
+    def sendto(self, UDPClientSocket, bytesToSend):
+        # Envia msg ao servidor usando o socket UDP criado
+        UDPClientSocket.sendto(bytesToSend, self.serverAddressPort)
+        return UDPClientSocket
+
+    def recvfrom(self, UDPClientSocket):
+        msgFromServer = UDPClientSocket.recvfrom(self.bufferSize)
         return msgFromServer
 
-generated_numbers = set()
-ISN = 2000
+serverAddressPort   = (localIP, localPort)
 
 seq_numbers = [i for i in range(ISN, ISN+10)]
 random.shuffle(seq_numbers)
 
-udpClient = UDPClient(localIP, localPort, ISN)
+for seq in seq_numbers:
 
-messages = [f"{i}" for i in range(0, 10)]
+    msgFromClient       = "Este é o "+ str(seq) +"º pacote enviado"
+    print("Mensagem enviada para o Servidor {}".format(msgFromClient) + " com sequência {}".format(seq))
 
-for i in range(ISN, ISN+10):
-    payload = messages[i].encode()
-    
-    # seq_num, ack, length, rwnd, payload
-    packet = struct.pack("!I I I I", seq_numbers[i], 0, len(payload), 0) + payload
-    udpClient.sendto(packet)
+    pacote = UDP_pacote(msgFromClient, serverAddressPort, bufferSize, seq)
+    UDPClientSocket = pacote.UDPClientSocket()
+    bytesToSend = pacote.bytesToSend()
+    pacote.sendto(UDPClientSocket, bytesToSend)
+    msgFromServer = pacote.recvfrom(UDPClientSocket)
 
-    msg = udpClient.recvfrom()
-
-    print(f"{msg}")
-
-
-
-
-    
+    print("Mensagem vinda do Servidor {}".format(msgFromServer[0]))

@@ -1,4 +1,8 @@
-from parameters import *
+import socket
+
+localIP     = "127.0.0.1"
+localPort   = 20001
+bufferSize  = 1024
 
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPServerSocket.bind((localIP, localPort))
@@ -36,10 +40,6 @@ while True:
         while expected_seq in buffer:
             print(f"Entregando pacote {expected_seq}: {buffer.pop(expected_seq)}")
             expected_seq += 1
-    
-        # Envia ACK de volta para o cliente
-        ack = f"ACK:{seq}"
-        UDPServerSocket.sendto(ack.encode(), address)
 
     elif seq > expected_seq:
         # Armazena no buffer para entrega futura
@@ -54,3 +54,7 @@ while True:
     else:
         # Pacote duplicado ou já entregue
         print(f"Pacote {seq} duplicado ou já entregue, descartado")
+    
+    # Envia ACK de volta para o cliente
+    ack = f"ACK:{seq}"
+    UDPServerSocket.sendto(ack.encode(), address)

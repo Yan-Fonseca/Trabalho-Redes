@@ -4,5 +4,6 @@ import time
 import random
 import threading
 
-HOST_IP = '127.0.0.1'
-HOST_PORT = 5005
+localIP = '127.0.0.1'
+localPort = 5005
+bufferSize  = 1024 # max size of the buffer

@@ -1,5 +1,4 @@
-import socket
-import random
+from parameters import *
 
 class UDP_pacote:
     def __init__(self, msgFromClient, serverAddressPort, bufferSize, seqNum):

@@ -47,19 +47,33 @@ while True:
     packet, address = connection.recv(buffer.get_capacity())
     seqNum, ack, rwnd, payload = unwrap_packet(packet)
     
-    print( f"Número de seq. recebido: {seqNum}, o qual está associado ao seguinte conteúdo => {payload.decode()}"
-    )
-    print("# Capacidade do buffer: ", buffer.get_capacity())
+    # print( f"Número de seq. recebido: {seqNum}, o qual está associado ao seguinte conteúdo => {payload}"
+    
+    if seqNum == expected_seq:
+        # entrega imediata
+        print(f"Entrega do pacote: {seqNum} => {payload}")
+        expected_seq += 1
 
-    with lock:
-        buffer.add(seqNum, payload)
+        # se buffer não estiver vazio
+        if buffer.buffer:
+            print("Status do buffer: ", buffer.buffer)
+
+        # entrega acumulativa
         while expected_seq in buffer.buffer:
-                print(f"Processou {expected_seq}")
-                print("status do buffer: ", buffer.buffer)
+            print(f"Entrega do pacote: {seqNum}")
+            expected_seq += 1
+            buffer.remove(expected_seq)
 
-                buffer.remove(expected_seq)
-                expected_seq += 1
+    elif seqNum > expected_seq:
+        # armazena no buffer para futura entrega
+        print(f"Recebido pacote {seqNum} fora da ordem. Armazenando-o em buffer.")
+        buffer.add(seqNum, payload)
+        print("Status do buffer: ", buffer.buffer)
 
-    # payload_to_send = f""
-    # packet = create_packet(seqNum + 1, 1, buffer.get_capacity(), payload_to_send)
-    # connection.send(packet, address)
+    else:
+        print(f"Pacote {seqNum} duplicado ou já entregue.")
+
+    # envia ack pedindo a partir de qual lugar ele deve continuar enviando
+    payload_to_send = f""
+    packet = create_packet(expected_seq, 1, buffer.get_capacity(), payload_to_send)
+    connection.send(packet, address)

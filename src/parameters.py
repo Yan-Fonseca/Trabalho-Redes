@@ -14,7 +14,6 @@ window_size = 8
 
 # funções auxiliares
 
-# decodifica payload no pacote
 def create_packet(seqNum:int, ack:int, rwnd:int, payload:str):
     # ! => big endian
     # I => inteiro
@@ -23,9 +22,8 @@ def create_packet(seqNum:int, ack:int, rwnd:int, payload:str):
     packet = struct.pack(format, seqNum, ack, rwnd, payload.encode())
     return packet
 
-# NÃO decodifica payload no pacote
 def unwrap_packet(packet: struct.pack):
     payloadSize = len(packet) - struct.calcsize("!III")
     format = "!III{}s".format(payloadSize)
     seqNum, ack, rwnd, payload = struct.unpack(format, packet)
-    return seqNum, ack, rwnd, payload
+    return seqNum, ack, rwnd, payload.decode() if isinstance(payload, bytes) else payload

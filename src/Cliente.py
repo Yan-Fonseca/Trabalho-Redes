@@ -42,9 +42,8 @@ if __name__ == "__main__":
         packet = create_packet(index, 0, connection.rwnd, payload)
         connection.send(packet)
 
-        # packet = connection.recv()
-        # seqNum, ack, rwnd, _ = unwrap_packet(packet)
+        packet = connection.recv()
+        seqNum, ack, rwnd, _ = unwrap_packet(packet)
 
-        # connection.seqNum = seqNum
-
-        # print("Número de sequência atualizado: ", connection.seqNum)
+        print("Número de sequência recebido: ", seqNum)
+        connection.seqNum = seqNum # mando de onde recebi o ack...

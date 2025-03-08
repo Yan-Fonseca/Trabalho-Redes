@@ -8,9 +8,9 @@ import threading
 localIP = '127.0.0.1'
 localPort = 5005
 clientMaxBufferSize  = 1024 
-serverMaxBufferSize = 100
+serverMaxBufferSize = 32 # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
 isn = 0
-window_size = 8
+chunk_size = 8 # tamanho da janela default
 
 # funções auxiliares
 
@@ -27,3 +27,7 @@ def unwrap_packet(packet: struct.pack):
     format = "!III{}s".format(payloadSize)
     seqNum, ack, rwnd, payload = struct.unpack(format, packet)
     return seqNum, ack, rwnd, payload.decode() if isinstance(payload, bytes) else payload
+
+# retorna o chunk especificado a partir de begin
+def chunk_message(message, begin, chunksize):
+    return message[begin:(begin+chunksize)]

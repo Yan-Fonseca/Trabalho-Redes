@@ -6,8 +6,8 @@ class UDPClient:
         self.ipDest = ipDest
         self.portaDest = portaDest
 
-        self.seqNum = ISN # seqNum inicialmente é o ISN.
-        self.rwnd = serverMaxBufferSize # inicialmente supõe-se buffer vazio.
+        self.seqNum = ISN # seqNum inicialmente é o ISN. (por enquanto só guarda ISN)
+        self.rwnd = serverMaxBufferSize # inicialmente supõe-se buffer vazio. 
 
         # abre uma conexão com IPv4 e usando UDP
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -30,20 +30,33 @@ if __name__ == "__main__":
     connection = UDPClient(localIP, localPort, isn)
 
     # 32 bits
-    messages = ['11111111', '00000000', '11001100', '00110011']
-    indexes = [3, 2, 1, 0]
-    # random.shuffle(indexes)
+    message = '11111111000000001100110000110011'
+    aux = ''
 
-    for index in indexes :
+    index = connection.seqNum
+    count = 0
+    while len(aux) != len(message):
     
-        payload = messages[index]
-        print(payload)
+        payload_send = chunk_message(message, index, chunk_size)
+        print(payload_send)
 
-        packet = create_packet(index, 0, connection.rwnd, payload)
+        packet = create_packet(count, 0, connection.rwnd, payload_send)
         connection.send(packet)
 
         packet = connection.recv()
         seqNum, ack, rwnd, _ = unwrap_packet(packet)
 
         print("Número de sequência recebido: ", seqNum)
-        connection.seqNum = seqNum # mando de onde recebi o ack...
+        
+        connection.rwnd = rwnd # atualizo o rwnd
+
+        index += chunk_size # atualizo o index
+        aux += payload_send
+        count += 1
+
+        if rwnd == 0:
+            # buffer está lotado, e capacidade zerou
+            # diminuir velocidade de transmissão
+            chunk_size /= 2
+            # pensar depois em como restaurar a velocidade...
+

@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_banhato import *
 
 # classe para gerenciar a conexão do cliente
 class UDPClient:
@@ -46,12 +46,20 @@ if __name__ == "__main__":
     while len(aux) != len(message):
     
         if connection.rwnd == 0:
-            print("Janela do receptor zero. Aguardando...")
-            if cwnd > 1:
-                cwnd = max(cwnd // 2, 1)
-                print(f"Reduzindo a velocidade: novo cwnd {cwnd}")
-            time.sleep(0.1)
-            continue
+            print("Rwnd zero. Aguardando atualização...")
+            
+            # Tenta receber um pacote para atualizar rwnd
+            try:
+                connection.UDPClientSocket.settimeout(2)  # Aguarda por uma atualização da janela
+                packet = connection.recv()
+                seqNum, ack, rwnd, _ = unwrap_packet(packet)
+                connection.rwnd = rwnd  # Atualiza a janela com o novo valor enviado pelo servidor
+                print(f"Novo rwnd: {connection.rwnd}")
+
+            except socket.timeout:
+                print("espera por atualizacao de rwnd...")
+
+            continue  # Volta para a checagem de rwnd atualizado
         
         chunk_cabivel = min(connection.rwnd, int(cwnd))
         chunk_cabivel = min(chunk_cabivel, mss)
@@ -65,13 +73,6 @@ if __name__ == "__main__":
             connection.send(packet)
             # Time out pra perda de pacote:
             connection.UDPClientSocket.settimeout(1)
-            
-            # Verifica se deve forçar perda para este pacote
-            simulate_loss = should_lose_packet(count)
-            if simulate_loss:
-                time.sleep(1.1)  # aguarda tempo suficiente para provocar timeout
-                # Não atualiza count ou index para forçar retransmissão
-                # continue
             
             try:
                 packet = connection.recv()

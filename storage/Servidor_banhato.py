@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_banhato import *
 
 class Buffer:
     def __init__(self):
@@ -77,6 +77,10 @@ while True:
             print(f"Pacote {seqNum} duplicado ou já entregue.")
         
         # envia ack pedindo a partir de qual lugar ele deve continuar enviando
+        simulate_loss = should_lose_packet(seqNum)
+        if simulate_loss:
+            time.sleep(1.1)  # aguarda tempo suficiente para provocar timeout
+            
         payload_to_send = f""
         packet = create_packet(expected_seq, 1, buffer.get_capacity(), payload_to_send)
         connection.send(packet, address)

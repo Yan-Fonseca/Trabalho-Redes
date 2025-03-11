@@ -82,6 +82,7 @@ while True:
             time.sleep(1.1)  # aguarda tempo suficiente para provocar timeout
             
         payload_to_send = f""
+        print(buffer.get_capacity())
         packet = create_packet(expected_seq, 1, buffer.get_capacity(), payload_to_send)
         connection.send(packet, address)
     

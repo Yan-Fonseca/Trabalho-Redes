@@ -44,7 +44,6 @@ if __name__ == "__main__":
     num_duplicados = 0
 
     while len(aux) != len(message):
-    
         if connection.rwnd == 0:
             print("Rwnd zero. Aguardando atualização...")
             

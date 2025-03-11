@@ -8,10 +8,10 @@ import threading
 localIP = '127.0.0.1'
 localPort = 5005
 clientMaxBufferSize  = 1024 
-serverMaxBufferSize = 32 # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
-isn = 0
 # chunk_size = 8 # tamanho da janela default
 mss = 8
+serverMaxBufferSize = 4 * mss # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
+isn = 0
 
 # funções auxiliares
 
@@ -36,6 +36,6 @@ def chunk_message(message, begin, chunksize):
 # a cada 3 pacotes, força a perda do próximo
 def should_lose_packet(success_count: int) -> bool:
     # Evita simular perda no primeiro pacote (quando success_count é 0)
-    if success_count > 0 and success_count % 3 == 0:
+    if success_count > 0 and success_count % 3   == 0:
         return True
     return False

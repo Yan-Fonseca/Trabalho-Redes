@@ -9,7 +9,7 @@ localIP = '127.0.0.1'
 localPort = 5005
 clientMaxBufferSize  = 1024 
 # chunk_size = 8 # tamanho da janela default
-mss = 8
+mss = 32
 serverMaxBufferSize = 4 * mss # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
 isn = 0
 

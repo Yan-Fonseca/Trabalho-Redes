@@ -13,6 +13,9 @@ num_duplicados = 0
 finished = False  # Indica quando toda a mensagem foi enviada
 aux_global = ""   # Armazena os dados enviados
 
+packets_enviados = {}
+lock = threading.Lock()
+
 packets_time_RTT = {}
 
 class PacketData:
@@ -31,9 +34,6 @@ class PacketData:
     
     def __repr__(self):
         return f'{self.seq_number} : t0 = {self.t0}, tf = {self.tf}, tam = {self.tam}, ack = {self.ack} \n'
-
-packets_enviados = {}
-lock = threading.Lock()
 
 class UDPClient:
     def __init__(self, ipDest: str, portaDest: int, ISN: int):
@@ -72,14 +72,14 @@ def thread_envio(connection: UDPClient, message: str):
 
             t0 = time.time_ns()
             connection.send(packet)
-            packets_time_RTT[count] = PacketData(count, t0, len(payload_send))
 
+            packets_time_RTT[count] = PacketData(count, t0, len(payload_send))
             # Atualiza os índices e a variável global com os dados enviados
             index += chunk_cabivel
             aux_global += payload_send
             count += 1
 
-        # time.sleep(0.1)  # Pequeno delay para simular envio contínuo
+        time.sleep(0.001)  # Pequeno delay para simular envio contínuo
 
     with lock:
         finished = True
@@ -112,7 +112,6 @@ def thread_recebimento(connection: UDPClient, message: str):
 
             packets_time_RTT[seqNum-1].tf = tf
             packets_time_RTT[seqNum-1].ack = True
-
             print(f"ACK recebido: próximo número de sequência {seqNum} | Janela informada {rwnd}")
             connection.rwnd = rwnd
             if ultimo_ack is not None and ultimo_ack == seqNum:
@@ -131,11 +130,10 @@ def thread_recebimento(connection: UDPClient, message: str):
                 cwnd *= 2
                 print(f"Slow Start: novo cwnd {cwnd}")
             else:
-                cwnd += 1
+                cwnd += 1 
                 print(f"Congestion Avoidance: novo cwnd {int(cwnd)}")
             # Opcional: remover pacotes confirmados do dicionário packets_enviados
     print("Envio concluído. Encerrando thread de recebimento.")
-
 
 def save_packets_to_csv(packets, filename):
     with open(filename, mode='w', newline='') as file:
@@ -152,10 +150,8 @@ if __name__ == "__main__":
     with open("teste_client.jpg", "rb") as img:
         message = base64.b64encode(img.read())
         message = str(message)
-    # message = b'111111111000000001100110000110011'
-    print(f"Mensagem: {message[0:10]} | Tamanho: {len(message)}")
-    # print(f"Tamanho: {len(message)}")
-    
+    # message = '11111111000000001100110000110011'
+    print(f"Mensagem: {message} | Tamanho: {len(message)}")
 
     t_envio = threading.Thread(target=thread_envio, args=(connection, message))
     t_recebimento = threading.Thread(target=thread_recebimento, args=(connection, message))
@@ -166,11 +162,7 @@ if __name__ == "__main__":
     t_envio.join()
     t_recebimento.join()
 
-    
+    print(f'resposta final: {packets_time_RTT}')
+
     save_packets_to_csv(packets_time_RTT, "packets_time_RTT.csv")
-
     print("Processo encerrado.")
-
-
-# packet_time_RTT = [{seq_number : {False, time, tam}}]
-# packet_time_RTT = [{0 : {True, 3, 1}}, {1 : {True, 5, 2}}, {2 : {True, 8, 4}}, {2 : {True, 8, 4}}]

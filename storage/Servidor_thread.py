@@ -57,6 +57,20 @@ def ack_sender(address, connection, current_capacity, ack_num):
     connection.send(ack_packet, address)
     print(f"ACK enviado: próximo número de sequência {ack_num} | Janela informada {current_capacity}")
 
+def delayed_update():
+    global expected_seq
+    # Atrasa a atualização para simular perda/timeout
+    print("Simulando atraso na atualização do expected_seq...")
+    time.sleep(0.5)  # atraso (só funciona para valores mais baixos ou igual a 0.5)
+    with seq_lock:
+        expected_seq += 1
+        print(f"expected_seq atualizado para {expected_seq} após atraso.")
+        # Verifica se há pacotes armazenados para entrega acumulativa
+        while any(item[0] == expected_seq for item in buffer.buffer):
+            print(f"Entrega do pacote (buffer): {expected_seq}")
+            buffer.remove(expected_seq)
+            expected_seq += 1
+
 connection = UDPServer(localIP, localPort)
 buffer = Buffer()
 
@@ -71,6 +85,12 @@ while True:
         if seqNum == expected_seq:
             print(f"Entrega do pacote: {expected_seq} => {payload}")
             print(f"Número de sequência recebido: {seqNum}")
+            # Decide se a atualização será adiada
+            # if should_lose_packet(expected_seq):
+            #     # Envia o ACK com o valor atual e atrasa a atualização
+            #     t_delay = threading.Thread(target=delayed_update)
+            #     t_delay.start()
+            # else:
             with seq_lock:
                 expected_seq += 1
                 print(f"expected_seq atualizado para {expected_seq}.")

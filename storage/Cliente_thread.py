@@ -153,8 +153,6 @@ if __name__ == "__main__":
     # message = '11111111000000001100110000110011'
     print(f"Mensagem: {message} | Tamanho: {len(message)}")
 
-    exit()
-
     t_envio = threading.Thread(target=thread_envio, args=(connection, message))
     t_recebimento = threading.Thread(target=thread_recebimento, args=(connection, message))
 

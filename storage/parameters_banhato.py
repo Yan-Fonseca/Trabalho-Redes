@@ -7,10 +7,10 @@ import threading
 # constantes
 localIP = '127.0.0.1'
 localPort = 5005
-clientMaxBufferSize  = 1024 
+clientMaxBufferSize  = 2048 
 # chunk_size = 8 # tamanho da janela default
-mss = 8
-serverMaxBufferSize = 4 * mss # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
+mss = 2
+serverMaxBufferSize = 2048 # a conta para dar o chunk size é chunk size * 4 (4 bytes cada char)
 isn = 0
 
 # funções auxiliares

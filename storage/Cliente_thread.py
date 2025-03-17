@@ -6,8 +6,8 @@ import csv
 import base64
 
 # Variáveis compartilhadas
-cwnd = 1
-sstresh = 5
+cwnd = mss
+sstresh = 8 * mss
 ultimo_ack = None
 num_duplicados = 0
 finished = False  # Indica quando toda a mensagem foi enviada
@@ -63,7 +63,7 @@ def thread_envio(connection: UDPClient, message: str):
 
             # Define o tamanho do chunk que pode ser enviado
             chunk_cabivel = min(connection.rwnd, int(cwnd))
-            chunk_cabivel = min(chunk_cabivel, mss)
+            # chunk_cabivel = min(chunk_cabivel, mss)
             # Obtém o pedaço da mensagem a ser enviado
             payload_send = chunk_message(message, index, chunk_cabivel)
             print(f"Enviando pacote {count} | Payload: '{payload_send}' | Tamanho: {len(payload_send)}")
@@ -130,7 +130,7 @@ def thread_recebimento(connection: UDPClient, message: str):
                 cwnd *= 2
                 print(f"Slow Start: novo cwnd {cwnd}")
             else:
-                cwnd += 1 
+                cwnd += 1 / cwnd
                 print(f"Congestion Avoidance: novo cwnd {int(cwnd)}")
             # Opcional: remover pacotes confirmados do dicionário packets_enviados
     print("Envio concluído. Encerrando thread de recebimento.")
@@ -147,11 +147,13 @@ def save_packets_to_csv(packets, filename):
 
 if __name__ == "__main__":
     connection = UDPClient(localIP, localPort, isn)
-    with open("teste_client.jpg", "rb") as img:
+    with open("test.jpg", "rb") as img:
         message = base64.b64encode(img.read())
         message = str(message)
     # message = '11111111000000001100110000110011'
     print(f"Mensagem: {message} | Tamanho: {len(message)}")
+
+    exit()
 
     t_envio = threading.Thread(target=thread_envio, args=(connection, message))
     t_recebimento = threading.Thread(target=thread_recebimento, args=(connection, message))
@@ -161,8 +163,6 @@ if __name__ == "__main__":
 
     t_envio.join()
     t_recebimento.join()
-
-    print(f'resposta final: {packets_time_RTT}')
 
     save_packets_to_csv(packets_time_RTT, "packets_time_RTT.csv")
     print("Processo encerrado.")

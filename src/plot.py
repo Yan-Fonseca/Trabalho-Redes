@@ -38,16 +38,15 @@ def graphic2(filename):
         obj = []
         for row in reader:
             obj.append(row)
-        
-        print(obj[1][1])
 
         tempo_zero = obj[1][1]
         tempos = []
         payload_tam = []
 
-        for i in range(1,len(obj)):
-            tempos.append((int(obj[i][2]) - int(tempo_zero))/10e6)
-            payload_tam.append(int(obj[i][3]))
+        for i in range(1,len(obj)-1):
+            if obj[i][2] != '':
+                tempos.append((int(obj[i][2]) - int(tempo_zero))/10e6)
+                payload_tam.append(int(obj[i][3]))
         
         tempos = np.array(tempos)
         payload_tam = np.array(payload_tam)
@@ -55,7 +54,7 @@ def graphic2(filename):
         plt.figure(figsize=(8, 5))
         plt.plot(tempos, payload_tam, color="b")
         plt.xlabel("t(ms)")
-        plt.ylabel("tamanho do pacote")
+        plt.ylabel("tamanho do pacote (bits)")
         plt.title("tamanho do pacote enviado em relação ao tempo")
         plt.legend()
         plt.grid(True)

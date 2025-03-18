@@ -32,10 +32,3 @@ def unwrap_packet(packet: struct.pack):
 # retorna o chunk especificado a partir de begin
 def chunk_message(message, begin, chunksize):
     return message[begin:(begin+chunksize)]
-
-# a cada 3 pacotes, força a perda do próximo
-def should_lose_packet(success_count: int) -> bool:
-    # Evita simular perda no primeiro pacote (quando success_count é 0)
-    if success_count > 0 and success_count % 3   == 0:
-        return True
-    return False

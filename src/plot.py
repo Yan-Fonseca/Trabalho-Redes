@@ -8,7 +8,6 @@ def graphic1(filename):
         obj = []
         for row in reader:
             obj.append(row)
-            print(f'row: {row}')
 
         tempo_zero = obj[1][1]
 

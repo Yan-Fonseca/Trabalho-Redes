@@ -33,9 +33,19 @@ def init_csv_log(filename):
         writer = csv.writer(file)
         writer.writerow(["seq_number", "t0", "tf", "tam"])
 
-def log_packet_info(packet):
-    timestamp = time.time_ns()
-    print(f"\nLOG: {packet.seq_number}\n")  # Adicionado para depuração
+def log_packet_info(*args):
+    if len(args) == 1:
+        packet = args[0]
+        log_msg = f"LOG: {packet.seq_number}"
+    elif len(args) == 3:
+        source, event, packet = args
+        log_msg = f"LOG: {packet.seq_number} | Source: {source}, Event: {event}"
+    else:
+        raise ValueError("Número inválido de argumentos para log_packet_info")
+    
+    # Exibe o log para depuração
+    print(f"\n{log_msg}\n")
+    
     with csv_lock:
         with open(CSV_FILENAME, "a", newline="") as file:
             writer = csv.writer(file)

@@ -1,7 +1,7 @@
 import threading
 import time
 import socket
-from parameters_banhato import *
+from parameters import *
 
 # Variável global para controlar a sequência esperada
 expected_seq = isn
@@ -69,8 +69,8 @@ while True:
     if rwnd > 0:
         # Pacote esperado (in order)
         if seqNum == expected_seq:
-            print(f"Entrega do pacote: {expected_seq} => {payload}")
-            print(f"Número de sequência recebido: {seqNum}")
+            # print(f"Entrega do pacote: {expected_seq} => {payload}")
+            # print(f"Número de sequência recebido: {seqNum}")
             with seq_lock:
                 expected_seq += 1
                 print(f"expected_seq atualizado para {expected_seq}.")

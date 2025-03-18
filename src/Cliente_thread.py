@@ -1,7 +1,7 @@
 import threading
 import time
 import socket
-from parameters_banhato import *
+from parameters import *
 import csv
 import base64
 import random
@@ -103,7 +103,7 @@ def thread_envio(connection: UDPClient, message: str):
 
             t0 = time.time_ns()
             pkt_data = PacketData(count, t0, len(payload_send))
-            if random.random() >= 0.3:
+            if random.random() >= 0.05:
                 print(f"Enviando pacote {count} | Payload: '{payload_send}' | Tamanho: {len(payload_send)}")
                 connection.send(packet)
             else:
@@ -239,10 +239,10 @@ if __name__ == "__main__":
 
     connection = UDPClient(localIP, localPort, isn)
     # Exemplo com mensagem codificada; descomente para usar arquivo
-    # with open("storage/test.jpg", "rb") as img:
-    #     message = base64.b64encode(img.read())
-    #     message = str(message)
-    message = '1111111100000000110011000011001111000110101010101111100000111011010110011110100001010101010101101'
+    with open("..\storage\img.jpg", "rb") as img:
+        message = base64.b64encode(img.read())
+        message = str(message)
+    # message = '1111111100000000110011000011001111000110101010101111100000111011010110011110100001010101010101101'
     print(f"Mensagem: {message} | Tamanho: {len(message)}")
 
     t_envio = threading.Thread(target=thread_envio, args=(connection, message))

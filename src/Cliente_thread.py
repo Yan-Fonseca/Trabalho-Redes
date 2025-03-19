@@ -5,6 +5,7 @@ from parameters import *
 import csv
 import base64
 import random
+import os
 
 # Constante de timeout (em segundos)
 TIMEOUT_THRESHOLD = 2
@@ -236,10 +237,11 @@ def thread_timeout(connection: UDPClient, message: str):
 if __name__ == "__main__":
     # Inicializa o arquivo CSV com cabeçalho
     init_csv_log(CSV_FILENAME)
+    path = os.path.join("storage", "img.jpg")
 
     connection = UDPClient(localIP, localPort, isn)
     # Exemplo com mensagem codificada; descomente para usar arquivo
-    with open("..\storage\img.jpg", "rb") as img:
+    with open(path, "rb") as img:
         message = base64.b64encode(img.read())
         message = str(message)
     # message = '1111111100000000110011000011001111000110101010101111100000111011010110011110100001010101010101101'

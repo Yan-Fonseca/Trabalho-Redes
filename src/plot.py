@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import os
 
 def interpolate_missing_tf(filename):
     data = []
@@ -104,7 +105,9 @@ def graphic2(filename):
         plt.grid(True)
         plt.show()
 
-filename = "src\packets_log.csv"
+path_csv_file = os.path.join("storage", "packets_log.csv")
+filename = path_csv_file
+
 interpolated_filename = interpolate_missing_tf(filename)
 plot_graphics(interpolated_filename)
 graphic2(interpolated_filename)

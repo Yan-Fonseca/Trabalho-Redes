@@ -26,7 +26,8 @@ packets_pending = {}
 
 # Lock exclusivo para escrita no CSV
 csv_lock = threading.Lock()
-CSV_FILENAME = "packets_log.csv"
+path_csv_file = os.path.join("storage", "packets_log.csv")
+CSV_FILENAME = path_csv_file
 
 def init_csv_log(filename):
     """Inicializa o arquivo CSV escrevendo o cabeçalho."""

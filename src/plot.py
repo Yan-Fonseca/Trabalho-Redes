@@ -104,7 +104,7 @@ def graphic2(filename):
         plt.grid(True)
         plt.show()
 
-filename = "src\packets_log.csv"
+filename = "packets_log.csv"
 interpolated_filename = interpolate_missing_tf(filename)
 plot_graphics(interpolated_filename)
 graphic2(interpolated_filename)
